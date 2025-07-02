@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<title>Go URL Shortener</title>
+		<style>
+			body {
+				font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+				max-width: 600px;
+				margin: 3rem auto;
+				padding: 1.5rem;
+				background: #f9f9f9;
+				color: #333;
+				border-radius: 8px;
+				box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+			}
+
+			h2 {
+				text-align: center;
+				color: #222;
+				margin-bottom: 2rem;
+			}
+
+			label {
+				margin-top: 1rem;
+				font-weight: bold;
+				display: block;
+			}
+
+			input {
+				width: 100%;
+				padding: 0.6rem;
+				margin-top: 0.3rem;
+				border: 1px solid #ccc;
+				border-radius: 4px;
+				font-size: 1rem;
+			}
+
+			button {
+				margin-top: 1.5rem;
+				width: 100%;
+				padding: 0.8rem;
+				background-color: #007bff;
+				border: none;
+				color: white;
+				font-size: 1rem;
+				border-radius: 4px;
+				cursor: pointer;
+				transition: background 0.3s ease;
+			}
+
+			button:hover {
+				background-color: #0056b3;
+			}
+
+			.result {
+				display: none;
+				margin-top: 2rem;
+				padding: 1rem;
+				border-radius: 6px;
+				background-color: #e9f7ef;
+				border-left: 5px solid #28a745;
+			}
+
+			.result a {
+				color: #007bff;
+				word-break: break-all;
+			}
+
+			.copy-button {
+				margin-top: 1rem;
+				background: #6c757d;
+			}
+
+			.copy-button:hover {
+				background: #5a6268;
+			}
+
+			.error {
+				background-color: #f8d7da;
+				color: #721c24;
+				border-left: 5px solid #dc3545;
+			}
+		</style>
+	</head>
+	<body>
+		<h2>Go URL Shortener</h2>
+
+		<label for="url">Long URL</label>
+		<input type="text" id="url" placeholder="https://example.com"/>
+
+		<label for="customCode">Custom Code (optional)</label>
+		<input type="text" id="customCode" placeholder="my-custom-code"/>
+
+		<label for="expiry">Expiry (in minutes, optional)</label>
+		<input type="number" id="expiry" placeholder="Leave blank for 24h"/>
+
+		<button onclick="shorten()">🔗 Shorten URL</button>
+
+		<div class="result" id="result"></div>
+
+		<script>
+			async function shorten() {
+                const url = document.getElementById("url").value.trim();
+                const customCode = document.getElementById("customCode").value.trim();
+                const expiry = parseInt(document.getElementById("expiry").value) || 0;
+
+                const resultDiv = document.getElementById("result");
+                resultDiv.className = 'result'; // reset
+
+                if (! url) {
+                    resultDiv.style.display = "block";
+                    resultDiv.classList.add("error");
+                    resultDiv.innerHTML = "<strong>Error:</strong> Please enter a valid URL.";
+                    return;
+                }
+
+                const response = await fetch("/shorten", {
+                    method: "POST",
+                    headers: {
+                    "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(
+                    {url, custom_code: customCode, expiry_mins: expiry}
+                    )
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.style.display = "block";
+                    resultDiv.innerHTML = `
+                            <strong>Short URL:</strong><br>
+                            <a href="${
+                    data.short_url
+                    }" target="_blank">${
+                    data.short_url
+                    }</a><br>
+                            <button class="copy-button" onclick="copyToClipboard('${
+                    data.short_url
+                    }')">📋 Copy to Clipboard</button>
+                        `;
+                } else {
+                    const errorText = await response.text();
+                    resultDiv.style.display = "block";
+                    resultDiv.classList.add("error");
+                    resultDiv.innerHTML = `<strong>Error:</strong> ${errorText}`;
+                }
+            }
+
+            function copyToClipboard(text) {
+                navigator.clipboard.writeText(text);
+                alert("Copied to clipboard!");
+            }
+		</script>
+	</body>
+</html>

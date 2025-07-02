@@ -1,0 +1,22 @@
+{
+  "chapt": {
+    "original_url": "https://chatgpt.com/c/6864bc57-3028-8008-83d8-8d6715d4a9e4",
+    "expiry": "2025-07-03T11:18:56.522230412+05:30",
+    "hit_count": 0
+  },
+  "code": {
+    "original_url": "http://localhost:9000/ui/",
+    "expiry": "2025-07-03T11:26:29.784447852+05:30",
+    "hit_count": 0
+  },
+  "paytm": {
+    "original_url": "https://paytm.com",
+    "expiry": "2025-07-03T11:01:03.500644583+05:30",
+    "hit_count": 0
+  },
+  "payutm": {
+    "original_url": "https://paytm.com",
+    "expiry": "2025-07-03T11:01:18.673531719+05:30",
+    "hit_count": 0
+  }
+}
